@@ -60,12 +60,10 @@ def add_climo_1970_time(nc):
     
     return nc
 
-def add_climo_data(nc):
-    var = nc.createVariable('tasmax', 'f4', ('time', 'lat', 'lon'), fill_value=1e20)
-    var.standard_name = "air_temperature"
-    var.long_name = "Daily Maximum Near-Surface Air Temperature"
-    var.units = 'K'
-    var.missing_value = 1e20
+def add_climo_data(nc, name, attributes={}):
+    var = nc.createVariable(name, 'f4', ('time', 'lat', 'lon'), fill_value=1e20)
+    for key, val in attributes.items():
+        setattr(var, key, val)
     for i in range(var.shape[0]):
         var[i,:,:] = np.random.randn(var.shape[1], var.shape[2])
     return nc
@@ -75,8 +73,13 @@ def get_bc_highres_nc(fname):
             'lat': {'start': 48, 'step': 0.008333333, 'count': 3241 } }
 
     nc = get_base_nc(fname, dims)
-    nc = add_climo_1970_time(nc)
-    nc = add_climo_data(nc)
+    nc = add_climo_1970_time(nc, unlim)
+    attributes = {'standard_name': 'air_temperature',
+                  'long_name': 'Daily Maximum Near-Surface Air Temperature',
+                  'units': 'K',
+                  'missing_value': 1e20
+                 }
+    nc = add_climo_data(nc, 'tasmax', attributes)
     return nc
     
 if __name__ == '__main__':
