@@ -6,7 +6,7 @@ import netCDF4
 import numpy as np
 
 def get_base_nc(fname, dims):
-    nc = netCDF4.Dataset(fname, 'w')
+    nc = netCDF4.Dataset(fname, 'w', 'NETCDF3_64BIT')
 
     l = dims['lat']
     lat = nc.createDimension('lat', l['count'])
@@ -26,11 +26,13 @@ def get_base_nc(fname, dims):
 
     return nc
 
-def add_climo_1970_time(nc):
-    time = nc.createDimension('time', 17)
+def add_climo_1970_time(nc, unlim=False):
+    dim_length = 17 if not unlim else 0
+    print(dim_length)
+    time = nc.createDimension('time', dim_length)
     var_time = nc.createVariable('time', 'i4', 'time')
     #                J     F     M     A     M     J     J     A     S     O     N     D    DJF   MAM   JJA   SON   ANN
-    var_time[:] = [5493, 5524, 5552, 5583, 5613, 5644, 5674, 5705, 5736, 5766, 5797, 5827, 5493, 5583, 5674, 5766, 5659] # FIXME: Are seasonal indices right?
+    var_time[0:17] = [5493, 5524, 5552, 5583, 5613, 5644, 5674, 5705, 5736, 5766, 5797, 5827, 5493, 5583, 5674, 5766, 5659] # FIXME: Are seasonal indices right?
 
     var_time.axis = 'T'
     var_time.units = 'days since 1970-01-01'
@@ -68,7 +70,7 @@ def add_climo_data(nc, name, attributes={}):
         var[i,:,:] = np.random.randn(var.shape[1], var.shape[2])
     return nc
 
-def get_bc_highres_nc(fname):
+def get_bc_highres_nc(fname, unlim=False):
     dims = {'lon': {'start': -140, 'step': 0.008333333, 'count': 1680 },
             'lat': {'start': 48, 'step': 0.008333333, 'count': 3241 } }
 
@@ -81,6 +83,18 @@ def get_bc_highres_nc(fname):
                  }
     nc = add_climo_data(nc, 'tasmax', attributes)
     return nc
+
+def make_multivariable_nc(fname, num_vars=1, unlim=False):
+    dims = {'lon': {'start': -140, 'step': 0.008333333, 'count': 1680 },
+            'lat': {'start': 48, 'step': 0.008333333, 'count': 3241 } }
+
+    nc = get_base_nc(fname, dims)
+    nc = add_climo_1970_time(nc, unlim)
+
+    for i in range(num_vars):
+        nc = add_climo_data(nc, 'var_{}'.format(i))
+    return nc
+
     
 if __name__ == '__main__':
     from tempfile import NamedTemporaryFile
