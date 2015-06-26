@@ -1,3 +1,9 @@
 numpy
 netcdf4
 ipython
+
+# For ipython notebook
+pyzmq
+jinja2
+tornado
+jsonschema
