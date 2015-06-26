@@ -84,4 +84,4 @@ if __name__ == '__main__':
 
     with NamedTemporaryFile(dir=os.getcwd(), suffix='.nc') as f: 
         nc = get_bc_highres_nc(f.name)
-        print nc
+        print(nc)
