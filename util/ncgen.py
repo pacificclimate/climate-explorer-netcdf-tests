@@ -5,6 +5,8 @@ from tempfile import NamedTemporaryFile
 import netCDF4
 import numpy as np
 
+from grids import bc_400m
+
 def get_base_nc(fname, dims):
     nc = netCDF4.Dataset(fname, 'w', 'NETCDF3_64BIT')
 
@@ -71,10 +73,7 @@ def add_climo_data(nc, name, attributes={}):
     return nc
 
 def get_bc_highres_nc(fname, unlim=False):
-    dims = {'lon': {'start': -140, 'step': 0.008333333, 'count': 1680 },
-            'lat': {'start': 48, 'step': 0.008333333, 'count': 3241 } }
-
-    nc = get_base_nc(fname, dims)
+    nc = get_base_nc(fname, bc_400m)
     nc = add_climo_1970_time(nc, unlim)
     attributes = {'standard_name': 'air_temperature',
                   'long_name': 'Daily Maximum Near-Surface Air Temperature',
@@ -85,10 +84,7 @@ def get_bc_highres_nc(fname, unlim=False):
     return nc
 
 def make_multivariable_nc(fname, num_vars=1, unlim=False):
-    dims = {'lon': {'start': -140, 'step': 0.008333333, 'count': 1680 },
-            'lat': {'start': 48, 'step': 0.008333333, 'count': 3241 } }
-
-    nc = get_base_nc(fname, dims)
+    nc = get_base_nc(fname, bc_400m)
     nc = add_climo_1970_time(nc, unlim)
 
     for i in range(num_vars):
