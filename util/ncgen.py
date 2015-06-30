@@ -8,7 +8,7 @@ import numpy as np
 from grids import bc_400m
 
 def get_base_nc(fname, dims):
-    nc = netCDF4.Dataset(fname, 'w', 'NETCDF3_64BIT')
+    nc = netCDF4.Dataset(fname, 'w')
 
     l = dims['lat']
     lat = nc.createDimension('lat', l['count'])
@@ -30,7 +30,6 @@ def get_base_nc(fname, dims):
 
 def add_climo_1970_time(nc, unlim=False):
     dim_length = 17 if not unlim else 0
-    print(dim_length)
     time = nc.createDimension('time', dim_length)
     var_time = nc.createVariable('time', 'i4', 'time')
     #                J     F     M     A     M     J     J     A     S     O     N     D    DJF   MAM   JJA   SON   ANN
