@@ -63,15 +63,18 @@ def add_climo_1970_time(nc, unlim=False):
     
     return nc
 
-def add_climo_data(nc, name, attributes={}):
-    var = nc.createVariable(name, 'f4', ('time', 'lat', 'lon'), fill_value=1e20)
+def add_climo_data(nc, name, attributes={}, timemajor=True):
+    if timemajor:
+        var = nc.createVariable(name, 'f4', ('time', 'lat', 'lon'), fill_value=1e20)
+    else:
+        var = nc.createVariable(name, 'f4', ('lat', 'lon', 'time'), fill_value=1e20)
     for key, val in attributes.items():
         setattr(var, key, val)
     for i in range(var.shape[0]):
         var[i,:,:] = np.random.randn(var.shape[1], var.shape[2])
     return nc
 
-def get_bc_highres_nc(fname, unlim=False):
+def get_bc_highres_nc(fname, unlim=False, timemajor=True):
     nc = get_base_nc(fname, bc_400m)
     nc = add_climo_1970_time(nc, unlim)
     attributes = {'standard_name': 'air_temperature',
@@ -79,7 +82,7 @@ def get_bc_highres_nc(fname, unlim=False):
                   'units': 'K',
                   'missing_value': 1e20
                  }
-    nc = add_climo_data(nc, 'tasmax', attributes)
+    nc = add_climo_data(nc, 'tasmax', attributes, timemajor)
     return nc
 
 def make_multivariable_nc(fname, num_vars=1, unlim=False):
@@ -95,5 +98,5 @@ if __name__ == '__main__':
     from tempfile import NamedTemporaryFile
 
     with NamedTemporaryFile(dir=os.getcwd(), suffix='.nc') as f: 
-        nc = get_bc_highres_nc(f.name)
+        nc = get_bc_highres_nc(f.name, timemajor=False)
         print(nc)
