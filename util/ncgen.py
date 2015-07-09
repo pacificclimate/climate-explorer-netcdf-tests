@@ -63,6 +63,17 @@ def add_climo_1970_time(nc, unlim=False):
     
     return nc
 
+def add_simple_time(nc, timescale, unlim=False):
+    dim_length = len(timescale) if not unlim else 0
+    time = nc.createDimension('time', dim_length)
+    var_time = nc.createVariable('time', 'i4', 'time')
+    var_time[:] = timescale
+    var_time.axis = 'T'
+    var_time.units = 'records since 1950-01-01'
+    var_time.calendar = 'gregorian'
+    var_time.long_name = 'time'
+    return nc
+
 def add_climo_data(nc, name, attributes={}, timemajor=True):
     if timemajor:
         var = nc.createVariable(name, 'f4', ('time', 'lat', 'lon'), fill_value=1e20)
