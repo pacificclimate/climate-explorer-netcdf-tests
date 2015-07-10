@@ -1,17 +1,11 @@
-FROM ipython/scipystack
+FROM pcic/geospatial-python
 
 RUN apt-get update
 RUN apt-get -yq install \
   libzmq3 \
   libzmq3-dev \
   python3-zmq \
-  libhdf5-dev \
-  libnetcdf-dev \
-  libgdal-dev \
-  libyaml-dev \
-  python3-GDAL
-
-RUN pip3 install scikit-image netCDF4
+  libfreetype6-dev
 
 ADD . /app
 WORKDIR /app/notebooks

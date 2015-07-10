@@ -1,10 +1,10 @@
 numpy
 netcdf4
 ipython
-pylab
 
 # For ipython notebook
 pyzmq
 jinja2
 tornado
 jsonschema
+matplotlib
