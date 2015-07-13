@@ -16,7 +16,7 @@ def get_base_nc(fname, dims):
     var_lat.axis = 'Y'
     var_lat.units = 'degrees_north'
     var_lat.long_name = 'latitude'
-    var_lat[:] = np.arange(l['start'], l['start'] + l['step'] * l['count'], l['step'])
+    var_lat[:] = np.linspace(l['start'], l['start'] + l['step'] * l['count'], l['count'])
 
     l = dims['lon']
     lon = nc.createDimension('lon', l['count'])
@@ -24,7 +24,7 @@ def get_base_nc(fname, dims):
     var_lon.axis = 'X'
     var_lon.units = 'degrees_east'
     var_lon.long_name = 'longitude'
-    var_lon[:] = np.arange(l['start'], l['start'] + l['step'] * l['count'], l['step'])
+    var_lon[:] = np.linspace(l['start'], l['start'] + l['step'] * l['count'], l['count'])
 
     return nc
 
