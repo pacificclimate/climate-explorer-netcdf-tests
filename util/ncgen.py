@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 import netCDF4
 import numpy as np
 
-from grids import bc_400m
+from grids import bc_400m, canada_5k, world_125k, world_250k, timescales
 
 def get_base_nc(fname, dims):
     nc = netCDF4.Dataset(fname, 'w')
@@ -16,7 +16,7 @@ def get_base_nc(fname, dims):
     var_lat.axis = 'Y'
     var_lat.units = 'degrees_north'
     var_lat.long_name = 'latitude'
-    var_lat[:] = np.arange(l['start'], l['start'] + l['step'] * l['count'], l['step'])
+    var_lat[:] = np.linspace(l['start'], l['start'] + l['step'] * l['count'], l['count'])
 
     l = dims['lon']
     lon = nc.createDimension('lon', l['count'])
@@ -24,7 +24,7 @@ def get_base_nc(fname, dims):
     var_lon.axis = 'X'
     var_lon.units = 'degrees_east'
     var_lon.long_name = 'longitude'
-    var_lon[:] = np.arange(l['start'], l['start'] + l['step'] * l['count'], l['step'])
+    var_lon[:] = np.linspace(l['start'], l['start'] + l['step'] * l['count'], l['count'])
 
     return nc
 
@@ -104,10 +104,42 @@ def make_multivariable_nc(fname, num_vars=1, unlim=False):
         nc = add_climo_data(nc, 'var_{}'.format(i))
     return nc
 
-    
+def make_nc(fname, num_vars=1, grid=bc_400m, timescale=timescales['seasonal'], unlim=False, timemajor=True):
+    nc = get_base_nc(fname, grid)
+    nc = add_simple_time(nc, timescale, unlim=unlim)
+
+    for i in range(num_vars):
+        nc = add_climo_data(nc, 'var_{}'.format(i), timemajor=timemajor)
+    return nc
+
+def make_canada_5k_climo_nc(fname, num_vars=1, unlim=False, timemajor=True):
+    nc = get_base_nc(fname, canada_5k)
+    nc = add_climo_1970_time(nc, unlim)
+
+    for i in range(num_vars):
+        nc = add_climo_data(nc, 'var_{}'.format(i))
+    return nc
+
+def make_world_125k_climo_nc(fname, num_vars=1, unlim=False, timemajor=True):
+    nc = get_base_nc(fname, world_125k)
+    nc = add_climo_1970_time(nc, unlim)
+
+    for i in range(num_vars):
+        nc = add_climo_data(nc, 'var_{}'.format(i))
+    return nc
+
+def make_world_250k_climo_nc(fname, num_vars=1, unlim=False, timemajor=True):
+    nc = get_base_nc(fname, world_250k)
+    nc = add_climo_1970_time(nc, unlim)
+
+    for i in range(num_vars):
+        nc = add_climo_data(nc, 'var_{}'.format(i))
+    return nc
+
 if __name__ == '__main__':
     from tempfile import NamedTemporaryFile
 
-    with NamedTemporaryFile(dir=os.getcwd(), suffix='.nc') as f: 
-        nc = get_bc_highres_nc(f.name, timemajor=False)
-        print(nc)
+    for grid in [bc_400m, canada_5k, world_125k, world_250k]:
+        with NamedTemporaryFile(dir=os.getcwd(), suffix='.nc') as f:
+            nc = make_nc(f.name, grid=grid)
+            print(nc)
