@@ -1,7 +1,8 @@
-from time import time
+from time import time, sleep
 from contextlib import ContextDecorator
 
 import numpy as np
+import os
 
 class ThroughputMeter(ContextDecorator):
     def __enter__(self):
@@ -16,3 +17,21 @@ class ThroughputMeter(ContextDecorator):
         MBps = MB / seconds
         print("{:03.3f} MB in {:03.3} seconds at {:03.3f} MB / sec".format(MB, seconds, MBps))
         return MBps
+
+def clear_host_cache():
+    """ Ensures that temp files created for subsequent readout throughput tests read from disk instead of cache. 
+        This requires triggering the script clear_host_cache.sh to carry out the clearing of system cache
+        by way of modifying a .tmp file in the /app/watch directory, which is linked to a real directory on the host. 
+        If you are using this function, make sure to run /path/on/host/to/notebooks/sudo clear_host_cache.sh &> /dev/null on the host before starting 
+        the test suite."""
+    os.system('touch /app/util/watch/cc_sig.tmp')
+    f = open('/app/util/watch/cc_sig.tmp', 'a')
+
+    while True:
+        try:
+            f.write('.') # modify the file to trigger clear_host_cache.sh to carry out cache clearing
+            f.close()
+        except: # clear_host_cache.sh will delete the temp file after the cache is cleared, which will cause this exception
+            print('host cache cleared')
+            sleep(0.3) # leave enough time for the host to finish before executing next Python statement
+            break
