@@ -24,13 +24,11 @@ def clear_host_cache():
         by way of modifying a .tmp file in the /app/watch directory, which is linked to a real directory on the host. 
         If you are using this function, make sure to run /path/on/host/to/notebooks/sudo clear_host_cache.sh &> /dev/null on the host before starting 
         the test suite."""
-    os.system('touch /app/util/watch/cc_sig.tmp')
-    f = open('/app/util/watch/cc_sig.tmp', 'a')
+    os.system('touch /app/cc_sig.tmp')
 
     while True:
         try:
-            f.write('.') # modify the file to trigger clear_host_cache.sh to carry out cache clearing
-            f.close()
+            os.stat('/app/cc_sig.tmp', 'a')
         except: # clear_host_cache.sh will delete the temp file after the cache is cleared, which will cause this exception
             print('host cache cleared')
             sleep(0.3) # leave enough time for the host to finish before executing next Python statement
