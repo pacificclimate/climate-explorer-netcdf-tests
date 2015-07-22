@@ -1,6 +1,7 @@
 numpy
 netcdf4
 ipython
+shapely
 
 # For ipython notebook
 pyzmq
