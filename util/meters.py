@@ -28,7 +28,7 @@ def clear_host_cache():
 
     while True:
         try:
-            os.stat('/app/cc_sig.tmp', 'a')
+            os.stat('/app/cc_sig.tmp')
         except: # clear_host_cache.sh will delete the temp file after the cache is cleared, which will cause this exception
             print('host cache cleared')
             sleep(0.3) # leave enough time for the host to finish before executing next Python statement
