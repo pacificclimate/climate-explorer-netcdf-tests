@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get -yq install \
   libzmq3 \
   libzmq3-dev \
+  libspatialindex-dev \
   python3-zmq \
   libfreetype6-dev
 

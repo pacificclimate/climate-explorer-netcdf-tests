@@ -2,6 +2,7 @@ numpy
 netcdf4
 ipython
 shapely
+rtree
 
 # For ipython notebook
 pyzmq
